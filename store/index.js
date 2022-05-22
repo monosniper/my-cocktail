@@ -1,14 +1,8 @@
 import {makeAutoObservable, toJS} from "mobx";
 import {db} from '../db'
+import Cookies from 'js-cookie'
 import {
-    disableNetwork,
-    doc,
-    enableNetwork,
-    getDoc,
-    getDocFromCache,
-    getDocs,
     Timestamp,
-    where
 } from "@firebase/firestore";
 import {collection, query} from "firebase/firestore";
 import {Day} from "../models/Day";
@@ -117,7 +111,8 @@ class Store {
     }
 
     async loadDays() {
-        const dayInLocalStorage = localStorage.getItem('day');
+        const dayInLocalStorage = Cookies.get('day');
+        // const dayInLocalStorage = localStorage.getItem('day');
 
         if(!dayInLocalStorage) {
             const daysRef = await db.collection('days').orderBy('date', 'desc')
@@ -135,8 +130,8 @@ class Store {
                     this.isDayStarted = true
                     this.setDayId(currentDay.id)
                     this.setDayData(toJS(currentDay))
-
-                    localStorage.setItem('day', JSON.stringify(currentDay))
+                    Cookies.set('day', JSON.stringify(currentDay))
+                    // localStorage.setItem('day', JSON.stringify(currentDay))
                 }
             })
         } else {
@@ -301,8 +296,9 @@ class Store {
         const salary = need_total / 100 * this.payPercent;
         const income = need_real_total - salary;
 
-        localStorage.removeItem('day')
-        console.log(localStorage.getItem('day'))
+        // localStorage.removeItem('day')
+        Cookies.remove('day')
+        // console.log(localStorage.getItem('day'))
 
         this.setDayData({...this.default_dayData})
 
