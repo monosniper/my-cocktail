@@ -9,9 +9,28 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@firebase/firestore": "^3.4.9",
+    "@google-cloud/firestore": "^5.0.2",
+    "@google-cloud/storage": "^5.20.5",
+    "@mui/material": "^5.8.0",
+    "firebase": "^9.8.1",
+    "firebase-admin": "^10.2.0",
+    "fs": "^0.0.1-security",
+    "mobx": "^6.5.0",
+    "mobx-react": "^7.4.0",
+    "mobx-react-lite": "^3.4.0",
+    "moment": "^2.29.3",
+    "net": "^1.0.2",
     "next": "12.1.6",
+    "node-sass": "^7.0.1",
+    "noty": "^3.2.0-beta-deprecated",
     "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react-dom": "18.1.0",
+    "react-firebase-hooks": "^5.0.3",
+    "react-query": "^3.39.0",
+    "tls": "^0.0.1"
   },
   "devDependencies": {
     "eslint": "8.16.0",
