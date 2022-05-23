@@ -207,6 +207,8 @@ const Day = () => {
                         <DayInfo day={store.dayData} />
 
                         <Button color={'error'} className={'button'} size={'large'} onClick={handleOpenFinish} variant={'outlined'}>Закончить день</Button>
+
+                        <br/>
                     </Stack>
 
                     <Modal

@@ -131,9 +131,23 @@ class Store {
         }
     }
 
+    async fetchDays() {
+        const daysRef = await db.collection('days').orderBy('date', 'desc')
+
+        daysRef.onSnapshot(snapshot => {
+            this.days = []
+
+            snapshot.forEach(day => {
+                this.days.push(new Day({id: day.id, ...day.data()}))
+            })
+        })
+    }
+
     async updateDayData(data) {
         return await db.collection(this.daysCollection).doc(this.dayId).update(data).then(() => {
-            this.dayData = new Day({...this.dayData, ...data})
+            const day = new Day({...this.dayData, ...data});
+            this.dayData = day
+            Cookies.set('day', JSON.stringify(day))
         })
     }
 

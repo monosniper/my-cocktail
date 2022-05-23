@@ -8,7 +8,10 @@ import 'moment/locale/ru';
 import {observer} from "mobx-react";
 
 const History = () => {
-    console.log(store.days)
+    useEffect(() => {
+        !store.days.length && store.fetchDays()
+    }, [])
+
     return (
         <div>
             <Logo/>
