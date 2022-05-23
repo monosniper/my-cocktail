@@ -20,8 +20,8 @@ const DayInfo = ({day, full=false}) => {
                 <Typography variant="body2" gutterBottom key={'gift-'+i}>
                     <span className="time">{moment(gift.time).format("HH:mm")}</span>
                     Беспл. коктейль ({gift.comment}):
-                    <Chip label={"M "+gift.small} size={'small'} />
-                    <Chip label={"Б "+gift.large} size={'small'} />
+                    {gift.small ? <Chip label={"M " + gift.small} size={'small'}/> : null}
+                    {gift.large ? <Chip label={"Б " + gift.large} size={'small'}/> : null}
                 </Typography>
             ))}
 
@@ -29,8 +29,8 @@ const DayInfo = ({day, full=false}) => {
                 <Typography variant="body2" gutterBottom key={'return-'+i}>
                     <span className="time">{moment(_return.time).format("HH:mm")}</span>
                     Возврат ({_return.comment}):
-                    <Chip label={"M "+_return.small} size={'small'} />
-                    <Chip label={"Б "+_return.large} size={'small'} />
+                    {_return.small ? <Chip label={"M " + _return.small} size={'small'}/> : null}
+                    {_return.large ? <Chip label={"Б " + _return.large} size={'small'}/> : null}
                 </Typography>
             ))}
 
@@ -46,8 +46,8 @@ const DayInfo = ({day, full=false}) => {
                 <Typography variant="body2" gutterBottom key={'pushUp-'+i}>
                     <span className="time">{moment(pushUp.time).format("HH:mm")}</span>
                     Пополнение:
-                    <Chip label={"M "+pushUp.small} size={'small'} />
-                    <Chip label={"Б "+pushUp.large} size={'small'} />
+                    {pushUp.small ? <Chip label={"M " + pushUp.small} size={'small'}/> : null}
+                    {pushUp.large ? <Chip label={"Б " + pushUp.large} size={'small'}/> : null}
                 </Typography>
             ))}
 
