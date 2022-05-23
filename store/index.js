@@ -2,6 +2,7 @@ import {makeAutoObservable, toJS} from "mobx";
 import {db} from '../db'
 import Cookies from 'js-cookie'
 import {
+    deleteDoc, doc,
     Timestamp,
 } from "@firebase/firestore";
 import {Day} from "../models/Day";
@@ -144,10 +145,33 @@ class Store {
     }
 
     async updateDayData(data) {
+        console.log(data)
         return await db.collection(this.daysCollection).doc(this.dayId).update(data).then(() => {
             const day = new Day({...this.dayData, ...data});
             this.dayData = day
             Cookies.set('day', JSON.stringify(day))
+        })
+    }
+
+    async refresh() {
+        const daysRef = await db.collection('days').orderBy('date', 'desc')
+
+        daysRef.onSnapshot(snapshot => {
+            this.days = []
+
+            snapshot.forEach(day => {
+                this.days.push(new Day({id: day.id, ...day.data()}))
+            })
+
+            const currentDay = this.days.find(day => day.isCompleted === false)
+
+            if(currentDay) {
+                this.isDayStarted = true
+                this.setDayId(currentDay.id)
+                this.setDayData(toJS(currentDay))
+                Cookies.set('day', JSON.stringify(currentDay))
+                // localStorage.setItem('day', JSON.stringify(currentDay))
+            }
         })
     }
 
@@ -180,11 +204,17 @@ class Store {
             small, large, comment
         } = data;
 
+
+
+        const gift = {
+            small: parseFloat(small), large: parseFloat(large), comment, time: new Date()
+        }
+
+        console.log(gift)
+
         return await this.updateDayData({
             gifts: [
-                ...this.dayData.gifts, {
-                    small: parseFloat(small), large: parseFloat(large), comment, time: Timestamp.fromDate(new Date())
-                }
+                ...this.dayData.gifts, gift
             ]
         })
     }
@@ -211,7 +241,7 @@ class Store {
         return await this.updateDayData({
             pushUps: [
                 ...this.dayData.pushUps, {
-                    small: parseFloat(small), large: parseFloat(large), time: Timestamp.fromDate(new Date())
+                    small: parseFloat(small), large: parseFloat(large), time: new Date()
                 }
             ]
         })
@@ -225,7 +255,7 @@ class Store {
         return await this.updateDayData({
             pickUps: [
                 ...this.dayData.pickUps, {
-                    was: parseFloat(was), amount: parseFloat(amount), comment, time: Timestamp.fromDate(new Date())
+                    was: parseFloat(was), amount: parseFloat(amount), comment, time: new Date()
                 }
             ]
         })
@@ -239,7 +269,7 @@ class Store {
         return await this.updateDayData({
             spents: [
                 ...this.dayData.spents, {
-                    amount: parseFloat(amount), comment, time: Timestamp.fromDate(new Date())
+                    amount: parseFloat(amount), comment, time: new Date()
                 }
             ]
         })
@@ -334,6 +364,10 @@ class Store {
         if(rs) return new Day(rs)
 
         return null;
+    }
+
+    async removeDay(id) {
+        return await deleteDoc(doc(db, "days", id));
     }
 }
 

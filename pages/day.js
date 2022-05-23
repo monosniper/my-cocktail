@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import store from "../store";
 import {Box, Button, CircularProgress, Grid, Modal, Skeleton, Stack, TextField} from "@mui/material";
 import Noty from 'noty'
@@ -8,6 +8,10 @@ import DayInfo from "../components/DayInfo";
 import {observer} from "mobx-react";
 
 const Day = () => {
+    useEffect(() => {
+        store.refresh()
+    }, [])
+
     const router = useRouter()
 
     const [freeModalOpen, setFreeModalOpen] = useState(false)

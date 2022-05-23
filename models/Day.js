@@ -66,7 +66,7 @@ export class Day {
     isCompleted = false
 
     constructor(data) {
-        console.log(data)
+        // console.log(data)
 
         if(typeof data.date === 'string') {
             this.dateJs = new Date(data.date)
@@ -98,66 +98,56 @@ export class Day {
         this.isCompleted = data.isCompleted
 
         this.gifts = data.gifts.map(gift => {
-            if(typeof data.date === 'string') {
-                gift.time = new Date(data.date)
-            } else if (data.date instanceof Date) {
-                gift.time = data.date
-            } else {
-                gift.time = data.date.toDate()
+            if(typeof gift.time === 'string') {
+                gift.time = new Date(gift.time)
+            } else if (gift.time instanceof Timestamp) {
+                gift.time = gift.time.toDate()
             }
+
             return gift
         })
         this.returns = data.returns.map(_return => {
-            if(typeof data.date === 'string') {
-                _return.time = new Date(data.date)
-            } else if (data.date instanceof Date) {
-                _return.time = data.date
-            } else {
-                _return.time = data.date.toDate()
+            console.log(typeof _return.time)
+            if(typeof _return.time === 'string') {
+                _return.time = new Date(_return.time)
+            } else if (_return.time instanceof Timestamp) {
+                _return.time = _return.time.toDate()
             }
 
             return _return
         })
         this.pickUps = data.pickUps.map(pickUp => {
-            if(typeof data.date === 'string') {
-                pickUp.time = new Date(data.date)
-            } else if (data.date instanceof Date) {
-                pickUp.time = data.date
-            } else {
-                pickUp.time = data.date.toDate()
+            if(typeof pickUp.time === 'string') {
+                pickUp.time = new Date(pickUp.time)
+            } else if (pickUp.time instanceof Timestamp) {
+                pickUp.time = pickUp.time.toDate()
             }
 
             return pickUp
         })
         this.pushUps = data.pushUps.map(pushUp => {
-            if(typeof data.date === 'string') {
-                pushUp.time = new Date(data.date)
-            } else if (data.date instanceof Date) {
-                pushUp.time = data.date
-            } else {
-                pushUp.time = data.date.toDate()
+            if(typeof pushUp.time === 'string') {
+                pushUp.time = new Date(pushUp.time)
+            } else if (pushUp.time instanceof Timestamp) {
+                pushUp.time = pushUp.time.toDate()
             }
 
             return pushUp
         })
         this.events = data.events.map(event => {
-            if(typeof data.date === 'string') {
-                event.time = new Date(data.date)
-            } else if (data.date instanceof Date) {
-                event.time = data.date
-            } else {
-                event.time = data.date.toDate()
+            if(typeof event.time === 'string') {
+                event.time = new Date(event.time)
+            } else if (event.time instanceof Timestamp) {
+                event.time = event.time.toDate()
             }
 
             return event
         })
         this.spents = data.spents.map(spent => {
-            if(typeof data.date === 'string') {
-                spent.time = new Date(data.date)
-            } else if (data.date instanceof Date) {
-                spent.time = data.date
-            } else {
-                spent.time = data.date.toDate()
+            if(typeof spent.time === 'string') {
+                spent.time = new Date(spent.time)
+            } else if (spent.time instanceof Timestamp) {
+                spent.time = spent.time.toDate()
             }
 
             return spent
