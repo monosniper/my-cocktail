@@ -15,7 +15,11 @@ const Report = () => {
 
     useEffect(() => {
         if(router.query.id) {
-            store.getDay(router.query.id).then(setDay)
+            store.getDay(router.query.id).then((rs) => {
+                setDay(rs)
+                console.log(rs)
+            })
+
         }
     }, [router.query])
 
@@ -27,7 +31,7 @@ const Report = () => {
                 {day ?
                     (
                         <>
-                            <div className={'title'}>{day.date}</div>
+                            <div className={'title'}>{day.date.toLocaleDateString()}</div>
 
                             <DayInfo day={day} full />
                         </>

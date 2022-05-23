@@ -2,6 +2,7 @@ import React from 'react';
 import {Chip, Typography} from "@mui/material";
 import store from "../store";
 import {observer} from "mobx-react-lite";
+import moment from "moment/moment";
 
 const DayInfo = ({day, full=false}) => {
     return (
@@ -17,7 +18,7 @@ const DayInfo = ({day, full=false}) => {
 
             {day.gifts.map((gift, i) => (
                 <Typography variant="body2" gutterBottom key={'gift-'+i}>
-                    <Chip size={'small'} label={gift.time} variant="outlined" />
+                    <span className="time">{moment(gift.time).format("HH:mm")}</span>
                     Беспл. коктейль ({gift.comment}):
                     <Chip label={"M "+gift.small} size={'small'} />
                     <Chip label={"Б "+gift.large} size={'small'} />
@@ -26,7 +27,7 @@ const DayInfo = ({day, full=false}) => {
 
             {day.returns.map((_return, i) => (
                 <Typography variant="body2" gutterBottom key={'return-'+i}>
-                    <Chip size={'small'} label={_return.time} variant="outlined" />
+                    <span className="time">{moment(_return.time).format("HH:mm")}</span>
                     Возврат ({_return.comment}):
                     <Chip label={"M "+_return.small} size={'small'} />
                     <Chip label={"Б "+_return.large} size={'small'} />
@@ -35,9 +36,18 @@ const DayInfo = ({day, full=false}) => {
 
             {day.pickUps.map((pickUp, i) => (
                 <Typography variant="body2" gutterBottom key={'pickUp-'+i}>
-                    <Chip size={'small'} label={pickUp.time} variant="outlined" />
+                    <span className="time">{moment(pickUp.time).format("HH:mm")}</span>
                     Изъятие ({pickUp.comment}):
                     <Chip label={pickUp.amount} size={'small'} />
+                </Typography>
+            ))}
+
+            {day.pushUps.map((pushUp, i) => (
+                <Typography variant="body2" gutterBottom key={'pushUp-'+i}>
+                    <span className="time">{moment(pushUp.time).format("HH:mm")}</span>
+                    Пополнение:
+                    <Chip label={"M "+pushUp.small} size={'small'} />
+                    <Chip label={"Б "+pushUp.large} size={'small'} />
                 </Typography>
             ))}
 
@@ -52,7 +62,7 @@ const DayInfo = ({day, full=false}) => {
 
             {day.spents.map((spent, i) => (
                 <Typography variant="body2" gutterBottom key={'spent-'+i}>
-                    <Chip size={'small'} label={spent.time} variant="outlined" />
+                    <span className="time">{moment(spent.time).format("HH:mm")}</span>
                     Доп. расходы ({spent.comment}):
                     <Chip label={spent.amount} size={'small'} />
                 </Typography>

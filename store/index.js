@@ -4,17 +4,7 @@ import Cookies from 'js-cookie'
 import {
     Timestamp,
 } from "@firebase/firestore";
-import {collection, query} from "firebase/firestore";
 import {Day} from "../models/Day";
-import logo from "../components/Logo";
-
-const daysConverter = {
-    toFirestore: (data) => data,
-    fromFirestore: (snapshot, options) => {
-        const data = snapshot.data(options);
-        return new Day(data);
-    }
-}
 
 class Store {
     isDayStarted = false
@@ -31,7 +21,7 @@ class Store {
     dayData = {}
 
     default_dayData = {
-        date: new Date().toLocaleDateString(),
+        date: new Date(),
         // Общий комментарий по дню
         comment: '',
 
@@ -137,13 +127,13 @@ class Store {
         } else {
             this.isDayStarted = true
             this.setDayId(JSON.parse(dayInLocalStorage).id)
-            this.setDayData(JSON.parse(dayInLocalStorage))
+            this.setDayData(new Day(JSON.parse(dayInLocalStorage)))
         }
     }
 
     async updateDayData(data) {
         return await db.collection(this.daysCollection).doc(this.dayId).update(data).then(() => {
-            this.dayData = {...this.dayData, ...data}
+            this.dayData = new Day({...this.dayData, ...data})
         })
     }
 
@@ -193,7 +183,7 @@ class Store {
         return await this.updateDayData({
             returns: [
                 ...this.dayData.returns, {
-                    small: parseFloat(small), large: parseFloat(large), comment, time: Timestamp.fromDate(new Date())
+                    small: parseFloat(small), large: parseFloat(large), comment, time: new Date()
                 }
             ]
         })

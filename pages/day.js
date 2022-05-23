@@ -191,9 +191,9 @@ const Day = () => {
         <div className="wrapper">
             <Logo />
 
-            {store.dayId ? (
+            {store.dayId && store.dayData.date ? (
                 <>
-                    <div className={'title'}>{store.dayData.date}</div>
+                    <div className={'title'}>{store.dayData.date.toLocaleDateString()}</div>
 
                     <Stack spacing={3}>
                         <div className="buttons-box">
