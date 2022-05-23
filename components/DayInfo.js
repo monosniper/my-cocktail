@@ -3,10 +3,24 @@ import {Chip, Typography} from "@mui/material";
 import store from "../store";
 import {observer} from "mobx-react-lite";
 import moment from "moment/moment";
+import {BiDownArrow, BiUpArrow} from "react-icons/bi";
 
 const DayInfo = ({day, full=false}) => {
     return (
         <div>
+            {full ? (
+                <>
+                    <Typography variant="body2" gutterBottom>
+                        Начало раб. дня: <span className="time">{moment(day.startTime).format("HH:mm")}</span>
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                        Конец раб. дня: <span className="time">{moment(day.endTime).format("HH:mm")}</span>
+                    </Typography>
+
+                    <br/>
+                </>
+            ) : null}
+
             <Typography variant="body2" gutterBottom>
                 Мал. стаканов в начале дня: <Chip label={day.startSmallCups} size={'small'} />
             </Typography>
@@ -70,8 +84,6 @@ const DayInfo = ({day, full=false}) => {
 
             {full ? (
                 <>
-                    <br/>
-
                     <Typography variant="body2" gutterBottom>
                         Мал. стаканов в конце дня: <Chip label={day.endSmallCups} size={'small'} />
                     </Typography>

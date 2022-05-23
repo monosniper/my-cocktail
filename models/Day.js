@@ -66,17 +66,27 @@ export class Day {
     isCompleted = false
 
     constructor(data) {
-        // console.log(data)
 
         if(typeof data.date === 'string') {
             this.dateJs = new Date(data.date)
             this.date = new Date(data.date)
-        } else if (data.date instanceof Date) {
-            this.dateJs = data.date
-            this.date = data.date
-        } else {
+        } else if (data.date instanceof Timestamp) {
             this.dateJs = data.date.toDate()
             this.date = data.date.toDate()
+        } else {
+            this.dateJs = data.date
+            this.date = data.date
+        }
+
+        if(typeof data.startTime === 'string') {
+            this.startTime = new Date(data.startTime)
+            this.endTime = new Date(data.endTime)
+        } else if (data.startTime instanceof Timestamp) {
+            this.startTime = data.startTime.toDate()
+            this.endTime = data.endTime.toDate()
+        } else {
+            this.startTime = data.startTime
+            this.endTime = data.endTime
         }
 
         this.id = data.id
@@ -107,7 +117,6 @@ export class Day {
             return gift
         })
         this.returns = data.returns.map(_return => {
-            console.log(typeof _return.time)
             if(typeof _return.time === 'string') {
                 _return.time = new Date(_return.time)
             } else if (_return.time instanceof Timestamp) {

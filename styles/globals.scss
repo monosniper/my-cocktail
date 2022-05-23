@@ -58,6 +58,21 @@ a {
   margin-right: 0.5rem;
 }
 
+.effective {
+
+  display: flex;
+  font-weight: bold;
+  align-items: center;
+
+  &.up {
+    color: #66cd23;
+  }
+
+  &.down {
+    color: #fc6a77;
+  }
+}
+
 .button {
   width: 100%;
   height: 100px;

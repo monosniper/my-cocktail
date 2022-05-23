@@ -22,6 +22,9 @@ class Store {
     dayData = {}
 
     default_dayData = {
+        startTime: new Date(),
+        endTime: new Date(),
+
         date: new Date(),
         // Общий комментарий по дню
         comment: '',
@@ -354,6 +357,7 @@ class Store {
             salary,
             income,
 
+            endTime: new Date(),
             isCompleted: true
         })
     }
@@ -367,6 +371,8 @@ class Store {
     }
 
     async removeDay(id) {
+        Cookies.remove('day')
+
         return await deleteDoc(doc(db, "days", id));
     }
 }
