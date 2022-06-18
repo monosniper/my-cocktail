@@ -19,6 +19,7 @@ const Day = () => {
     const [pushModalOpen, setPushModalOpen] = useState(false)
     const [pickUpModalOpen, setPickUpModalOpen] = useState(false)
     const [spentModalOpen, setSpentModalOpen] = useState(false)
+    const [emptySoldModalOpen, setEmptySoldModalOpen] = useState(false)
     const [finishModalOpen, setFinishModalOpen] = useState(false)
 
     const [isFreeLoading, setIsFreeLoading] = useState(false)
@@ -27,6 +28,7 @@ const Day = () => {
     const [isPickUpLoading, setIsPickUpLoading] = useState(false)
     const [isSpentLoading, setIsSpentLoading] = useState(false)
     const [isFinishLoading, setIsFinishLoading] = useState(false)
+    const [isEmptySoldLoading, setIsEmptySoldLoading] = useState(false)
 
     const [freeSmallCups, setFreeSmallCups] = useState(0)
     const [freeLargeCups, setFreeLargeCups] = useState(0)
@@ -45,6 +47,9 @@ const Day = () => {
 
     const [spentAmount, setSpentAmount] = useState(0)
     const [spentComment, setSpentComment] = useState('')
+
+    const [emptySoldSmallCups, setEmptySoldSmallCups] = useState(0)
+    const [emptySoldLargeCups, setEmptySoldLargeCups] = useState(0)
 
     const [finishSmallCups, setFinishSmallCups] = useState(0)
     const [finishLargeCups, setFinishLargeCups] = useState(0)
@@ -155,6 +160,26 @@ const Day = () => {
         })
     }
 
+    const handleEmptySold = () => {
+        setIsEmptySoldLoading(true)
+
+        store.addEmptySold({
+            small: emptySoldSmallCups,
+            large: emptySoldLargeCups,
+        }).then(() => {
+            setEmptySoldModalOpen(false)
+            setIsEmptySoldLoading(false)
+
+            setEmptySoldSmallCups(0)
+            setEmptySoldLargeCups(0)
+
+            new Noty({
+                text: 'Готово',
+                type: 'success'
+            }).show()
+        })
+    }
+
     const handleFinish = () => {
         setIsFinishLoading(true)
 
@@ -182,6 +207,7 @@ const Day = () => {
     const handleOpenPush = () => {setPushModalOpen(true)}
     const handleOpenPickUp = () => {setPickUpModalOpen(true)}
     const handleOpenSpent = () => {setSpentModalOpen(true)}
+    const handleOpenEmptySold = () => {setEmptySoldModalOpen(true)}
     const handleOpenFinish = () => {setFinishModalOpen(true)}
 
     const handleCloseFreeModal = () => {setFreeModalOpen(false)}
@@ -189,6 +215,7 @@ const Day = () => {
     const handleClosePushModal = () => {setPushModalOpen(false)}
     const handleClosePickUpModal = () => {setPickUpModalOpen(false)}
     const handleCloseSpentModal = () => {setSpentModalOpen(false)}
+    const handleCloseEmptySoldModal = () => {setEmptySoldModalOpen(false)}
     const handleCloseFinishModal = () => {setFinishModalOpen(false)}
 
     return (
@@ -205,6 +232,7 @@ const Day = () => {
                             <Button className={'button'} size={'large'} onClick={handleOpenReturn} variant={'contained'}>Возврат</Button>
                             <Button className={'button'} size={'large'} onClick={handleOpenPush} variant={'contained'}>Пополнение</Button>
                             <Button className={'button'} size={'large'} onClick={handleOpenPickUp} variant={'contained'}>Изъятие из кассы</Button>
+                            <Button className={'button'} size={'large'} onClick={handleOpenEmptySold} variant={'contained'}>Прод. пустые ст.</Button>
                             <Button className={'button'} size={'large'} onClick={handleOpenSpent} variant={'contained'}>Доп. затраты</Button>
                         </div>
 
@@ -407,6 +435,40 @@ const Day = () => {
                                 />
                                 <div className="center">
                                     <Button disabled={isSpentLoading} onClick={handleSpent} variant={'contained'}>{isSpentLoading ? <CircularProgress /> : 'Готово'}</Button>
+                                </div>
+                            </Stack>
+                        </Box>
+                    </Modal>
+
+                    <Modal
+                        open={emptySoldModalOpen}
+                        onClose={handleCloseEmptySoldModal}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box className={'modal-box'}>
+                            <div className="sub-title">Проданные пустые ст.</div>
+                            <Stack spacing={2}>
+                                <TextField
+                                    label="Кол-во проданных мал. стаканчиков"
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    value={emptySoldSmallCups}
+                                    onChange={(e) => setEmptySoldSmallCups(e.target.value)}
+                                />
+                                <TextField
+                                    label="Кол-во проданных бол. стаканчиков"
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    value={emptySoldLargeCups}
+                                    onChange={(e) => setEmptySoldLargeCups(e.target.value)}
+                                />
+                                <div className="center">
+                                    <Button disabled={isEmptySoldLoading} onClick={handleEmptySold} variant={'contained'}>{isEmptySoldLoading ? <CircularProgress /> : 'Готово'}</Button>
                                 </div>
                             </Stack>
                         </Box>

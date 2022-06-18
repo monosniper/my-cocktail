@@ -9,8 +9,9 @@ const Home = () => {
     const [text, setText] = useState('Начать день')
 
     useEffect(() => {
+        store.refresh()
+
         if(store.isDayStarted && store.dayData.date) {
-            console.log(store.dayData)
             setText(store.dayData.date.toLocaleDateString())
         } else {
             setText('Начать день')

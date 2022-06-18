@@ -8,17 +8,30 @@ export class Day {
     // Кол-во ст. в начале дня
     startSmallCups = 0
     startLargeCups = 0
+
     // Кол-во ст. в конце дня
     endSmallCups = 0
     endLargeCups = 0
 
-    // Кол-во проданных ст.
-    smallCupsSold = 0
-    largeCupsSold = 0
+    // Кол-во проданных коктейлей
+    smallCocktailsSold = 0
+    largeCocktailsSold = 0
+
+    // Кол-во потраченных коктейлей
+    smallCocktailsSpent = 0
+    largeCocktailsSpent = 0
+
+    // Кол-во проданных пустых ст.
+    emptySmallCupsSold = 0
+    emptyLargeCupsSold = 0
 
     // Общее кол-во потраченных ст. за день
     smallCupsSpend = 0
     largeCupsSpend = 0
+
+    // Общее кол-во проданных ст. за день
+    smallCupsSold = 0
+    largeCupsSold = 0
 
     // Ст. отданные бесплатно
     gifts = [
@@ -95,6 +108,12 @@ export class Day {
         this.startLargeCups = data.startLargeCups
         this.endSmallCups = data.endSmallCups
         this.endLargeCups = data.endLargeCups
+        this.emptySmallCupsSold = data.emptySmallCupsSold
+        this.emptyLargeCupsSold = data.emptyLargeCupsSold
+        this.smallCocktailsSold = data.smallCocktailsSold
+        this.largeCocktailsSold = data.largeCocktailsSold
+        this.smallCocktailsSpent = data.smallCocktailsSpent
+        this.largeCocktailsSpent = data.largeCocktailsSpent
         this.smallCupsSold = data.smallCupsSold
         this.largeCupsSold = data.largeCupsSold
         this.smallCupsSpend = data.smallCupsSpend
@@ -161,5 +180,21 @@ export class Day {
 
             return spent
         })
+    }
+
+    getTimeSortedEvents() {
+        function addType(item, type) {
+            item.type = type
+
+            return item;
+        }
+
+        return [
+            ...this.gifts.map(item => addType(item, 'gift')),
+            ...this.returns.map(item => addType(item, 'return')),
+            ...this.pickUps.map(item => addType(item, 'pickUp')),
+            ...this.pushUps.map(item => addType(item, 'pushUp')),
+            ...this.spents.map(item => addType(item, 'spent')),
+        ].sort((a, b) => a.time - b.time)
     }
 }

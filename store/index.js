@@ -13,8 +13,10 @@ class Store {
     daysCollection = 'days'
 
     payPercent = 10
-    smallCupPrice = 5000
-    largeCupPrice = 10000
+    smallCupPrice = 1000
+    largeCupPrice = 2000
+    smallCocktailPrice = 5000
+    largeCocktailPrice = 10000
 
     // Document id in firestore
     dayId = null
@@ -32,17 +34,30 @@ class Store {
         // Кол-во ст. в начале дня
         startSmallCups: 0,
         startLargeCups: 0,
+
         // Кол-во ст. в конце дня
         endSmallCups: 0,
         endLargeCups: 0,
 
-        // Кол-во проданных ст.
-        smallCupsSold: 0,
-        largeCupsSold: 0,
+        // Кол-во проданных коктейлей
+        smallCocktailsSold: 0,
+        largeCocktailsSold: 0,
+
+        // Кол-во потраченных коктейлей
+        smallCocktailsSpent: 0,
+        largeCocktailsSpent: 0,
+
+        // Кол-во проданных пустых ст.
+        emptySmallCupsSold: 0,
+        emptyLargeCupsSold: 0,
 
         // Общее кол-во потраченных ст. за день
         smallCupsSpend: 0,
         largeCupsSpend: 0,
+
+        // Общее кол-во проданных ст. за день
+        smallCupsSold: 0,
+        largeCupsSold: 0,
 
         // Ст. отданные бесплатно
         gifts: [
@@ -95,9 +110,6 @@ class Store {
         makeAutoObservable(this)
 
         this.loadDays()
-        // disableNetwork(db);
-
-        // this.setDayData({...this.default_dayData})
     }
 
     setDayData(data) {
@@ -108,7 +120,7 @@ class Store {
         const dayInLocalStorage = Cookies.get('day');
         // const dayInLocalStorage = localStorage.getItem('day');
 
-        if(!dayInLocalStorage) {
+        if (!dayInLocalStorage) {
             const daysRef = await db.collection('days').orderBy('date', 'desc')
 
             daysRef.onSnapshot(snapshot => {
@@ -120,7 +132,7 @@ class Store {
 
                 const currentDay = this.days.find(day => day.isCompleted === false)
 
-                if(currentDay) {
+                if (currentDay) {
                     this.isDayStarted = true
                     this.setDayId(currentDay.id)
                     this.setDayData(toJS(currentDay))
@@ -148,10 +160,9 @@ class Store {
     }
 
     async updateDayData(data) {
-        console.log(data)
         return await db.collection(this.daysCollection).doc(this.dayId).update(data).then(() => {
             const day = new Day({...this.dayData, ...data});
-            this.dayData = day
+            this.setDayData(day)
             Cookies.set('day', JSON.stringify(day))
         })
     }
@@ -168,12 +179,14 @@ class Store {
 
             const currentDay = this.days.find(day => day.isCompleted === false)
 
-            if(currentDay) {
+            if (currentDay) {
                 this.isDayStarted = true
                 this.setDayId(currentDay.id)
-                this.setDayData(toJS(currentDay))
+                this.setDayData(currentDay)
                 Cookies.set('day', JSON.stringify(currentDay))
-                // localStorage.setItem('day', JSON.stringify(currentDay))
+            } else {
+                Cookies.remove('day')
+                this.setDayData(this.default_dayData)
             }
         })
     }
@@ -188,7 +201,7 @@ class Store {
         } = data
 
         this.isDayStarted = true;
-        
+
         const day = await db.collection(this.daysCollection)
             .add({
                 ...this.default_dayData,
@@ -207,13 +220,12 @@ class Store {
             small, large, comment
         } = data;
 
-
-
         const gift = {
-            small: parseFloat(small), large: parseFloat(large), comment, time: new Date()
+            small: parseFloat(small),
+            large: parseFloat(large),
+            comment,
+            time: new Date()
         }
-
-        console.log(gift)
 
         return await this.updateDayData({
             gifts: [
@@ -278,6 +290,21 @@ class Store {
         })
     }
 
+    async addEmptySold(data) {
+        const {
+            small,
+            large,
+        } = data;
+
+        const emptySmallCupsSold = this.dayData.emptySmallCupsSold + parseFloat(small)
+        const emptyLargeCupsSold = this.dayData.emptyLargeCupsSold + parseFloat(large)
+
+        return await this.updateDayData({
+            emptySmallCupsSold,
+            emptyLargeCupsSold,
+        })
+    }
+
     async endDay(data) {
         const {
             endSmallCups, endLargeCups
@@ -293,25 +320,55 @@ class Store {
             startLargeCups += pushUp.large
         })
 
-        const smallCupsSpend = startSmallCups - endSmallCups;
-        const largeCupsSpend = startLargeCups - endLargeCups;
+        // Общее кол-во потраченных ст. за день
+        let smallCupsSpend = startSmallCups - endSmallCups;
+        let largeCupsSpend = startLargeCups - endLargeCups;
 
-        let smallCupsSold = smallCupsSpend
-        let largeCupsSold = largeCupsSpend
+        // Кол-во потраченных коктейлей
+        let smallCocktailsSpend = 0;
+        let largeCocktailsSpend = 0;
 
         this.dayData.gifts.forEach(gift => {
-            smallCupsSold -= gift.small
-            largeCupsSold -= gift.large
+            smallCocktailsSpend += gift.small
+            largeCocktailsSpend += gift.large
         })
 
         this.dayData.returns.forEach(_return => {
-            smallCupsSold -= _return.small
-            largeCupsSold -= _return.large
+            smallCocktailsSpend += _return.small
+            largeCocktailsSpend += _return.large
         })
 
+        // Общее кол-во проданных ст. за день
+        let smallCupsSold = smallCupsSpend - smallCocktailsSpend
+        let largeCupsSold = largeCupsSpend - largeCocktailsSpend
+
+        // Кол-во проданных коктейлей
+        const smallCocktailsSold = smallCupsSold - this.dayData.emptySmallCupsSold
+        const largeCocktailsSold = largeCupsSold - this.dayData.emptyLargeCupsSold
+
+        console.log('прод пуст s ст - ', this.dayData.emptySmallCupsSold)
+        console.log('прод пуст l ст - ', this.dayData.emptyLargeCupsSold)
+        console.log('пот s ст - ', smallCupsSpend)
+        console.log('пот l ст - ', largeCupsSpend)
+        console.log('прод s ст - ', smallCupsSold)
+        console.log('прод l ст - ', largeCupsSold)
+        console.log('пот s кок - ', smallCocktailsSpend)
+        console.log('пот l кок - ', largeCocktailsSpend)
+        console.log('прод s кок - ', smallCocktailsSold)
+        console.log('прод l кок - ', largeCocktailsSold)
+
+        // Сумма всеx потраченных коктейлей
+        const spendCocktailsAmount = (smallCocktailsSpend * this.smallCocktailPrice) + (largeCocktailsSpend * this.largeCocktailPrice)
+
+        // Сумма всеx проданных коктейлей
+        const soldCocktailsAmount = (smallCocktailsSold * this.smallCocktailPrice) + (largeCocktailsSold * this.largeCocktailPrice)
+
+        // Сумма всеx проданных пустых ст.
+        const soldEmptyCupsAmount = (this.dayData.emptySmallCupsSold * this.smallCupPrice) + (this.dayData.emptyLargeCupsSold * this.largeCupPrice)
+
         let spent = 0;
-        let need_total = (smallCupsSpend * this.smallCupPrice) + (largeCupsSpend * this.largeCupPrice);
-        let need_real_total = (smallCupsSold * this.smallCupPrice) + (largeCupsSold * this.largeCupPrice);
+        let need_total = spendCocktailsAmount + soldEmptyCupsAmount;
+        let need_real_total = soldCocktailsAmount + soldEmptyCupsAmount;
         let real_total = need_real_total;
 
         this.dayData.pickUps.forEach(pickUp => {
@@ -319,7 +376,7 @@ class Store {
         })
 
         this.dayData.events.forEach(event => {
-            if(event.now < event.was) {
+            if (event.now < event.was) {
                 spent = event.was - event.now
 
                 real_total -= spent
@@ -333,9 +390,7 @@ class Store {
         const salary = need_total / 100 * this.payPercent;
         const income = need_real_total - salary;
 
-        // localStorage.removeItem('day')
         Cookies.remove('day')
-        // console.log(localStorage.getItem('day'))
 
         this.setDayData({...this.default_dayData})
 
@@ -347,8 +402,15 @@ class Store {
 
             smallCupsSpend,
             largeCupsSpend,
+
             smallCupsSold,
             largeCupsSold,
+
+            smallCocktailsSpend,
+            largeCocktailsSpend,
+
+            smallCocktailsSold,
+            largeCocktailsSold,
 
             spent,
             need_total,
@@ -365,7 +427,7 @@ class Store {
     async getDay(id) {
         const rs = (await db.collection(this.daysCollection).doc(id).get()).data()
 
-        if(rs) return new Day(rs)
+        if (rs) return new Day(rs)
 
         return null;
     }
